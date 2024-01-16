@@ -6,8 +6,6 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from fuzzywuzzy import fuzz
 import requests
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input, decode_predictions
 import numpy as np
 
 async def find_product_image(link, session, base_url):
@@ -35,17 +33,10 @@ async def find_product_image(link, session, base_url):
                 ratio = fuzz.ratio(product_name, alt)
 
                 if ratio > 40:
-                    # Classify the image using MobileNetV2
-                    predictions = await classify_image(src_value, base_url)
-
                     #Join the base url with the found image url
                     src_value = urljoin(base_url, src_value)
                     
-                    # Display the top prediction
-                    if predictions:
-                        top_prediction = predictions[0]
-                        print(f"Found image with matching alt: {src_value}")
-                        print(f"Top Prediction: {top_prediction[1]} ({top_prediction[2]:.2f})")
+                    print(f"Found image with matching alt: {src_value}")
 
                     return src_value, alt
 
@@ -69,24 +60,3 @@ async def extract_product_name(url):
         return product_name
 
     return ""  # Return an empty string if no product name is found
-
-async def classify_image(image_url, base_url):
-    try:
-        # Load MobileNetV2 model
-        model = MobileNetV2(weights='imagenet')
-
-        # Load and preprocess the image from the URL
-        img_data = requests.get(image_url).content
-        img = image.img_to_array(image.load_img(io.BytesIO(img_data), target_size=(224, 224)))
-        x = np.expand_dims(img, axis=0)
-        x = preprocess_input(x)
-
-        # Make predictions
-        predictions = model.predict(x)
-        decoded_predictions = decode_predictions(predictions, top=1)[0]
-
-        return decoded_predictions
-
-    except Exception as e:
-        print(f"Error classifying image: {e}")
-        return None
