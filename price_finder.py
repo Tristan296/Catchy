@@ -9,49 +9,49 @@ from fuzzywuzzy import fuzz
 from price_finder_old import find_product_name_element
 
 
-async def get_allowed_substring(website_name, product_name):
-    """
-    This method defines a dictionary that has each website assigned to its own allowed substring.
-    This substring serves as a filter to selectively extract product links.
+# async def get_allowed_substring(website_name, product_name):
+#     """
+#     This method defines a dictionary that has each website assigned to its own allowed substring.
+#     This substring serves as a filter to selectively extract product links.
 
-    E.g. JBHIFI -> '/products/'
-         MYER -> '/p/'
-         OFFICEWORKS -> '/shop/'
+#     E.g. JBHIFI -> '/products/'
+#          MYER -> '/p/'
+#          OFFICEWORKS -> '/shop/'
 
-    Returns:
-        Substring (str)
-    """
-    product_name = '-'.join(product_name)
+#     Returns:
+#         Substring (str)
+#     """
+#     product_name = '-'.join(product_name)
 
-    allowed_substrings = {
-        "binglee": '/products/',
-        "jd-sports": '/product/',
-        "footlocker": '/en/product/',
-        "insport": '/sale/product/' or '/product/',
-        "kogan": '/buy/',
-        "officeworks": '/shop/officeworks/p/',
-        "davidjones": '/product/',
-        "kmart": '/product/',
-        "bigw": '/product/',
-        "woolworths": '/shop/productdetails/',
-        "target": '/p/',
-        "ebgames": '/product/',
-        "puma": '/au/en/pd/',
-        "uniqlo": '/en/products/',
-        "gluestore": '/products/',
-        "myer": '/p/',
-        "rebelsport": '/p/',
-        "nike": '/t/',
-        "puma": '/pd/', 
-        "asics": '/en/au/',
-        "culturekings": '/products/',
-        "harveynorman": str(product_name)
-    }
+#     allowed_substrings = {
+#         "binglee": '/products/',
+#         "jd-sports": '/product/',
+#         "footlocker": '/en/product/',
+#         "insport": '/sale/product/' or '/product/',
+#         "kogan": '/buy/',
+#         "officeworks": '/shop/officeworks/p/',
+#         "davidjones": '/product/',
+#         "kmart": '/product/',
+#         "bigw": '/product/',
+#         "woolworths": '/shop/productdetails/',
+#         "target": '/p/',
+#         "ebgames": '/product/',
+#         "puma": '/au/en/pd/',
+#         "uniqlo": '/en/products/',
+#         "gluestore": '/products/',
+#         "myer": '/p/',
+#         "rebelsport": '/p/',
+#         "nike": '/t/',
+#         "puma": '/pd/', 
+#         "asics": '/en/au/',
+#         "culturekings": '/products/',
+#         "harveynorman": str(product_name)
+#     }
 
-    website_name = website_name or "default"
-    substring = allowed_substrings.get(website_name, "default")
-    print(f"substring allowed for {website_name} is {substring}.")
-    return substring
+#     website_name = website_name or "default"
+#     substring = allowed_substrings.get(website_name, "default")
+#     print(f"substring allowed for {website_name} is {substring}.")
+#     return substring
 
 
 async def process_url(url, product_name, processed_sublinks=set(), printed_prices=set()):
@@ -96,7 +96,9 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
     
     
     product_name = str(product_name).replace(' ', '-')
-    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path) > 40}
+
+    # 
+    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path.replace('/', '-')) > 40}
     # Process only new sublinks
     new_sublinks = sublinks - processed_sublinks
     
@@ -114,6 +116,7 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
             print("Found Product details:")
             print(f"Link: {sublink}")
             print(f"Price: {sublink_price}\n\n")
+
 
     # Add processed sublinks to the set
     processed_sublinks.update(new_sublinks)
