@@ -6,7 +6,7 @@ from fuzzywuzzy import fuzz
 from price_finder import process_url
 from image_finder import find_product_image
 
-query = "nike airmax".split(' ')
+query = "tefal airfryer".split(' ')
 
 def fuzzy_match(query, text):
     # Fuzzy string matching 

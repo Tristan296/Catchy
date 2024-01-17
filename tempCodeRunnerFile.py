@@ -1,1 +1,1 @@
-import aiohttp
+ user_input = request.form['productName']
