@@ -1,23 +1,12 @@
 import aiohttp
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 import tldextract
+import yarl
 from image_finder import find_product_image
 import re 
-
-async def find_prices(text_content):
-    """
-    Find prices in the given soup using a regular expression pattern.
-
-    Args:
-        text_content (str): The sublink's soup content
-
-    Returns:
-        list: A list of strings of the found prices.
-    """
-    price_pattern = re.compile(r'\$\s?(\d+(?:,\d{3})*(?:\.\d{2})?)')
-    prices = price_pattern.findall(text_content)
-    return prices
+from fuzzywuzzy import fuzz
+from price_finder_old import find_product_name_element
 
 
 async def get_allowed_substring(website_name, product_name):
@@ -35,14 +24,28 @@ async def get_allowed_substring(website_name, product_name):
     product_name = '-'.join(product_name)
 
     allowed_substrings = {
+        "binglee": '/products/',
+        "jd-sports": '/product/',
+        "footlocker": '/en/product/',
+        "insport": '/sale/product/' or '/product/',
+        "kogan": '/buy/',
+        "officeworks": '/shop/officeworks/p/',
+        "davidjones": '/product/',
+        "kmart": '/product/',
+        "bigw": '/product/',
+        "woolworths": '/shop/productdetails/',
+        "target": '/p/',
+        "ebgames": '/product/',
+        "puma": '/au/en/pd/',
+        "uniqlo": '/en/products/',
+        "gluestore": '/products/',
         "myer": '/p/',
         "rebelsport": '/p/',
         "nike": '/t/',
-        "davidjones": '/product/',
-        "binglee": '/products/',
-        "puma": '/pd/',
+        "puma": '/pd/', 
         "asics": '/en/au/',
         "culturekings": '/products/',
+        "harveynorman": str(product_name)
     }
 
     website_name = website_name or "default"
@@ -70,12 +73,12 @@ async def process_url(url, product_name, processed_sublinks=set(), printed_price
         soup = BeautifulSoup(html_content, 'lxml')
         url_info = tldextract.extract(url)
 
-        allowed_substring = await get_allowed_substring(url_info.domain, product_name)
-        
-        await process_sub_url(url, soup, session, allowed_substring, processed_sublinks, f"https://www.{url_info.domain}.com.au/")
+        # allowed_substring = await get_allowed_substring(url_info.domain, product_name)
+
+        await process_sub_url(url, soup, session, processed_sublinks, f"https://www.{url_info.domain}.com.au/", product_name)
 
 
-async def process_sub_url(url, soup, session, allowed_substring, processed_sublinks, base_url):
+async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name):
     """Processes sublinks extracted from the main URL, prints product details, and updates processed sublinks set.
 
     Args:
@@ -90,23 +93,52 @@ async def process_sub_url(url, soup, session, allowed_substring, processed_subli
         This function fetches sublinks, processes them, extracts prices and images, and prints product details.
         It then updates the set of processed sublinks.
     """
-    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if allowed_substring in a['href']}
+    
+    
+    product_name = str(product_name).replace(' ', '-')
+    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path) > 40}
     # Process only new sublinks
     new_sublinks = sublinks - processed_sublinks
     
     for sublink in new_sublinks:
+
         sublink_response = await session.get(sublink)
         sublink_html_content = await sublink_response.text()
         sublink_soup = BeautifulSoup(sublink_html_content, 'lxml')
         sublink_text_content = sublink_soup.get_text()
 
         # gets prices for sublinks (returns array of prices)
-        sublink_prices = await find_prices(sublink_text_content)
+        sublink_price, innermost_price_element = await find_product_name_element(sublink, sublink_soup)
+        
+        if sublink_price:
+            print("Found Product details:")
+            print(f"Link: {sublink}")
+            print(f"Price: {sublink_price}\n\n")
 
-        # Goes through found prices array and gets the images
-        for sublink_price in sublink_prices:
-            sublink_images, alt_text = await find_product_image(sublink, session, base_url)
-            print(f"Price: ${sublink_price} - URL: {sublink} - Image: {sublink_images} - Alt: {alt_text}")
-                
     # Add processed sublinks to the set
     processed_sublinks.update(new_sublinks)
+
+
+async def extract_product_name(url):
+    """Extracts the product name from the sub-link
+    E.g. https://www.myer.com.au/p/tommy-hilfiger-essential-cotton-te-835469290-1:
+        Returns:
+            tommy-hilfiger-essential-cotton-te-835469290-1
+    """
+    # Parse the URL
+    parsed_url = urlparse(url)
+
+    # Extract the product name from the last segment of the path
+    path_segments = parsed_url.path.strip('/').split('/')
+    if path_segments:
+        product_name = path_segments[-1]
+
+        # Remove any trailing characters like ".html" or digits
+        product_name = re.sub(r'(\.html\d+)$', '', product_name)
+        
+        # Split the product name into parts and join them
+        product_name = '-'.join(filter(None, product_name.split('-')))
+        
+        return product_name
+
+    return ""  # Return an empty string if no product name is found

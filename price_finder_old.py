@@ -11,7 +11,7 @@ from yarl import URL
 from fuzzywuzzy import fuzz
 
 
-async def find_product_name_element(link, session):
+async def find_product_name_element(link, soup):
     """Extracts html elements containing product name elements entities matching product name from product urls.
 
     Args:
@@ -24,9 +24,6 @@ async def find_product_name_element(link, session):
     if not isinstance(link, str):
         print("Skipping processing for link, it's not a string:", link)
         return None, None
-   
-    async with session.get(str(URL(link))) as response:
-        res = await response.text()
   
     product_name = await extract_product_name(link)
 
@@ -36,14 +33,10 @@ async def find_product_name_element(link, session):
     
     product_name = str(product_name).split('-')
 
-    print(f"finding the price for {product_name}")
-    print(link)
-    soup = BeautifulSoup(res, "lxml")
+    print(f"finding the price for {product_name} in {link}")
 
     matched_tag = soup.find(lambda tag: fuzz.partial_ratio(product_name, tag.get_text()) > 40 if tag.get_text() else False)
-    # for tag in soup.find_all():
-    #     if all(word in tag.text for word in product_name):
-    #         matched_tag = soup.select_one(tag.parent.name)
+
     price, innermost_child = await find_product_price(matched_tag, soup)
     if price:
         return price, innermost_child
