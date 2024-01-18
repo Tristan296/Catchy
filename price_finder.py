@@ -1,5 +1,5 @@
 import aiohttp
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 from urllib.parse import urljoin, urlparse
 import tldextract
 import yarl
@@ -70,7 +70,7 @@ async def process_url(url, product_name, processed_sublinks=set(), printed_price
     async with aiohttp.ClientSession() as session:
         response = await session.get(url)
         html_content = await response.text()
-        soup = BeautifulSoup(html_content, 'lxml')
+        soup = BeautifulSoup(html_content, 'lxml', parse_only=SoupStrainer('a'))
         url_info = tldextract.extract(url)
 
         # allowed_substring = await get_allowed_substring(url_info.domain, product_name)
@@ -110,11 +110,13 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
         sublink_text_content = sublink_soup.get_text()
         # gets prices for sublinks (returns array of prices)
         sublink_price, innermost_price_element = await find_product_name_element(sublink, sublink_soup)
-        
-        if sublink_price:
+        image_url, image_element = await find_product_image(sublink, session, base_url)
+
+        if sublink_price and image_url:
             print("Found Product details:")
             print(f"Link: {sublink}")
             print(f"Price: {sublink_price}\n\n")
+            print(f"Image url: {image_url}")
 
     # Add processed sublinks to the set
     processed_sublinks.update(new_sublinks)
