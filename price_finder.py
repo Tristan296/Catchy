@@ -95,20 +95,19 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
     """
     
     
-    product_name = str(product_name).replace(' ', '-')
+    product_name = str(product_name)
 
-    # 
-    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path.replace('/', '-')) > 40}
+    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path.replace('/', '-')) > 50
+                and not str(a['href']).endswith("/")}
+    
     # Process only new sublinks
     new_sublinks = sublinks - processed_sublinks
     
     for sublink in new_sublinks:
-
         sublink_response = await session.get(sublink)
         sublink_html_content = await sublink_response.text()
         sublink_soup = BeautifulSoup(sublink_html_content, 'lxml')
         sublink_text_content = sublink_soup.get_text()
-
         # gets prices for sublinks (returns array of prices)
         sublink_price, innermost_price_element = await find_product_name_element(sublink, sublink_soup)
         
@@ -117,31 +116,6 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
             print(f"Link: {sublink}")
             print(f"Price: {sublink_price}\n\n")
 
-
     # Add processed sublinks to the set
     processed_sublinks.update(new_sublinks)
 
-
-async def extract_product_name(url):
-    """Extracts the product name from the sub-link
-    E.g. https://www.myer.com.au/p/tommy-hilfiger-essential-cotton-te-835469290-1:
-        Returns:
-            tommy-hilfiger-essential-cotton-te-835469290-1
-    """
-    # Parse the URL
-    parsed_url = urlparse(url)
-
-    # Extract the product name from the last segment of the path
-    path_segments = parsed_url.path.strip('/').split('/')
-    if path_segments:
-        product_name = path_segments[-1]
-
-        # Remove any trailing characters like ".html" or digits
-        product_name = re.sub(r'(\.html\d+)$', '', product_name)
-        
-        # Split the product name into parts and join them
-        product_name = '-'.join(filter(None, product_name.split('-')))
-        
-        return product_name
-
-    return ""  # Return an empty string if no product name is found

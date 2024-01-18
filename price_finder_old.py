@@ -41,36 +41,44 @@ async def find_product_name_element(link, soup):
     if price:
         return price, innermost_child
 
-    return None, None
+    else:
+        print("Price couldn't be found. Trying to find the first price in the website using regex.")
+        first_price = await find_first_price_with_regex(soup)
+        if first_price:
+            return f"${first_price}", None
+        else:
+            print("No price found on the website.")
+            return None, None
+
+async def find_first_price_with_regex(soup):
+    # Find the first price in the website using a regular expression
+    price_pattern = re.compile(r'^\d+(,\d{1,2})?$')  # Adjust the regex pattern based on your price format
+    first_price_match = soup.find(string=price_pattern)
+
+    if first_price_match:
+        return first_price_match.strip()
+    else:
+        return None
                     
 async def find_product_price(matched_tag, soup):
-    def check_tag(tag):
-        innermost_child = tag.find(lambda t: not t.find_all(), recursive=False)
-        if innermost_child:
-            price_text = innermost_child.text.strip()
-            if is_valid_price(price_text):
-                return price_text, innermost_child
-        return None, None
-
     current_tag = matched_tag
 
-    # Check next elements
     while current_tag:
-        price, innermost_child = check_tag(current_tag)
-        if price:
-            return price, innermost_child
-        current_tag = current_tag.findNext('div')
+        next_sibling = current_tag.findNext('div')
 
-    # Reset to the original tag
-    current_tag = matched_tag.findPrevious('div')
+        if next_sibling:
+            innermost_child = next_sibling.find(lambda tag: not tag.find_all(), recursive=False)
 
-    # Check previous elements
-    while current_tag:
-        price, innermost_child = check_tag(current_tag)
-        if price:
-            return price, innermost_child
-        current_tag = current_tag.findPrevious('div')
+            if innermost_child:
+                price_text = innermost_child.text.strip()
 
+                if is_valid_price(price_text):
+                   #  print("Price:", price_text)
+                    return price_text, innermost_child
+
+        current_tag = next_sibling
+    
+    
     return None, None
 
 def is_valid_price(text):
