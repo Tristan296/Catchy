@@ -1,0 +1,1 @@
+ user_input = request.form['productName']
