@@ -4,7 +4,7 @@ from googlesearch import search
 from google_product_extractor import run
 import asyncio
 from fuzzywuzzy import fuzz
-from price_finder import process_url
+from webScraper import process_url
 from image_finder import find_product_image
 
 app = Flask(__name__)
