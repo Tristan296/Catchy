@@ -32,10 +32,10 @@ def searchItem():
 
 
 async def main(query):
+    setFlag = False
     for url in search(' '.join(query), tld="co.in", num=10, stop=20, pause=0.1):
         if fuzzy_match(query, url) > 70:
-            # print('awaiting.....')
-            await process_url(url, query)
+            await process_url(url, setFlag, query)
 
     # asyncio.run(main())
     # return search
