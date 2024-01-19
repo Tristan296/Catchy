@@ -24,53 +24,62 @@ async def find_product_name_element(link, soup):
     if not isinstance(link, str):
         print("Skipping processing for link, it's not a string:", link)
         return None, None
-  
-    product_name = await extract_product_name(link)
 
-    if product_name is None:
-        print(f"Skipping processing for {link} as product name is None")
-        return None, None
-    
-    product_name = str(product_name).split('-')
+    # uses YARL to get the raw parts from the url and get the product name from it 
+    # E.g. https://www.example.com/BUZIO-Stainless-Bottle-Vacuum-Insulated/dp/B07R3HYDVW/
+    # Returns: ('BUZIO-Stainless-Bottle-Vacuum-Insulated', 'dp', 'B07R3HYDVW', '')
 
-    print(f"finding the price for {product_name} in {link}")
+    url_parts_list = URL(link).parts
+    print("parts list: ", url_parts_list)
+    url_info = [extract_product_name(url_parts) for url_parts in url_parts_list]
 
-    matched_tag = soup.find(lambda tag: fuzz.partial_ratio(product_name, tag.get_text()) > 40 if tag.get_text() else False)
+    for part in url_info:
+        matched_tag = soup.find(lambda tag: fuzz.partial_ratio(part, tag.get_text()) > 40 if tag.get_text() else False)
 
     price, innermost_child = await find_product_price(matched_tag, soup)
+    
     if price:
         return price, innermost_child
 
-    return None, None
+    else:
+        print("Price couldn't be found. Trying to find the first price in the website using regex.")
+        first_price = await find_first_price_with_regex(soup)
+        if first_price:
+            return f"${first_price}", None
+        else:
+            print("No price found on the website.")
+            return None, None
+
+async def find_first_price_with_regex(soup):
+    # Find the first price in the website using a regular expression
+
+    price_pattern = re.compile(r'^\d+(,\d{1,2})?$')  # Adjust the regex pattern based on your price format
+    first_price_match = soup.find(string=price_pattern)
+
+    if first_price_match:
+        return first_price_match.strip()
+    else:
+        return None
                     
 async def find_product_price(matched_tag, soup):
-    def check_tag(tag):
-        innermost_child = tag.find(lambda t: not t.find_all(), recursive=False)
-        if innermost_child:
-            price_text = innermost_child.text.strip()
-            if is_valid_price(price_text):
-                return price_text, innermost_child
-        return None, None
-
     current_tag = matched_tag
 
-    # Check next elements
     while current_tag:
-        price, innermost_child = check_tag(current_tag)
-        if price:
-            return price, innermost_child
-        current_tag = current_tag.findNext('div')
+        next_sibling = current_tag.findNext('div')
 
-    # Reset to the original tag
-    current_tag = matched_tag.findPrevious('div')
+        if next_sibling:
+            innermost_child = next_sibling.find(lambda tag: not tag.find_all(), recursive=False)
 
-    # Check previous elements
-    while current_tag:
-        price, innermost_child = check_tag(current_tag)
-        if price:
-            return price, innermost_child
-        current_tag = current_tag.findPrevious('div')
+            if innermost_child:
+                price_text = innermost_child.text.strip()
 
+                if is_valid_price(price_text):
+                   #  print("Price:", price_text)
+                    return price_text, innermost_child
+
+        current_tag = next_sibling
+    
+    
     return None, None
 
 def is_valid_price(text):
@@ -78,21 +87,10 @@ def is_valid_price(text):
     price_pattern = re.compile(r'^\$\d+(\.\d{1,2})?$')  # Assumes a simple dollar amount (e.g., $10 or $10.50)
     return bool(price_pattern.match(text))
 
-async def extract_product_name(url):
-    # Parse the URL
-    parsed_url = urlparse(url)
-
-    # Extract the product name from the last segment of the path
-    path_segments = parsed_url.path.strip('/').split('/')
-    if path_segments:
-        product_name = path_segments[-1]
-
-        # Remove any trailing characters like ".html" or digits
-        product_name = re.sub(r'(\.html\d+)$', '', product_name)
-        
-        # Split the product name into parts and join them
-        product_name = '-'.join(filter(None, product_name.split('-')))
-        
+def extract_product_name(url_parts):
+    # Extract the product name from the second element onward in the path
+    if url_parts:
+        product_name = url_parts[::1]
         return product_name
 
     return ""  # Return an empty string if no product name is found
