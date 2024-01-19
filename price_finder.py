@@ -123,11 +123,9 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
         It then updates the set of processed sublinks.
     """
     
-    
-    product_name = str(product_name)
-
-    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path.replace('/', '-')) > 50
-                and not str(a['href']).endswith("/")}
+    product_name = str(product_name).replace(' ', '-')
+ 
+    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path.replace('/', '-')) > 40}
     
     # Process only new sublinks
     new_sublinks = sublinks - processed_sublinks
