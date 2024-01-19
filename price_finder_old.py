@@ -29,13 +29,11 @@ async def find_product_name_element(link, soup):
     # E.g. https://www.example.com/BUZIO-Stainless-Bottle-Vacuum-Insulated/dp/B07R3HYDVW/
     # Returns: ('BUZIO-Stainless-Bottle-Vacuum-Insulated', 'dp', 'B07R3HYDVW', '')
 
-    url_parts_list = URL(link).parts
-    print("parts list: ", url_parts_list)
-    url_info = [extract_product_name(url_parts) for url_parts in url_parts_list]
+    # url_parts_list = URL(link).parts
+    # print("parts list: ", url_parts_list)
+    # url_info = [extract_product_name(url_parts) for url_parts in url_parts_list]
 
-    for part in url_info:
-        matched_tag = soup.find(lambda tag: fuzz.partial_ratio(part, tag.get_text()) > 40 if tag.get_text() else False)
-
+    matched_tag = soup.find(lambda tag: fuzz.partial_ratio(link, tag.get_text()) > 40 if tag.get_text() else False)
     price, innermost_child = await find_product_price(matched_tag, soup)
     
     if price:
