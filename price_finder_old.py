@@ -29,12 +29,11 @@ async def find_product_name_element(link, soup):
     # E.g. https://www.example.com/BUZIO-Stainless-Bottle-Vacuum-Insulated/dp/B07R3HYDVW/
     # Returns: ('BUZIO-Stainless-Bottle-Vacuum-Insulated', 'dp', 'B07R3HYDVW', '')
 
-    url_parts_list = URL(link).parts
-    print("parts list: ", url_parts_list)
-    url_info = [extract_product_name(url_parts) for url_parts in url_parts_list]
-
-    for part in url_info:
-        matched_tag = soup.find(lambda tag: fuzz.partial_ratio(part, tag.get_text()) > 40 if tag.get_text() else False)
+    # url_parts_list = URL(link).parts
+    # print("parts list: ", url_parts_list)
+    # url_info = [extract_product_name(url_parts) for url_parts in url_parts_list]
+    
+    matched_tag = soup.find(lambda tag: fuzz.partial_ratio(link, tag.get_text()) > 40 if tag.get_text() else False)
 
     price, innermost_child = await find_product_price(matched_tag, soup)
     
@@ -52,8 +51,7 @@ async def find_product_name_element(link, soup):
 
 async def find_first_price_with_regex(soup):
     # Find the first price in the website using a regular expression
-
-    price_pattern = re.compile(r'^\d+(,\d{1,2})?$')  # Adjust the regex pattern based on your price format
+    price_pattern = re.compile(r'^\d+(,\d{1,2})?$') 
     first_price_match = soup.find(string=price_pattern)
 
     if first_price_match:
