@@ -1,5 +1,5 @@
 import aiohttp
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 from urllib.parse import urljoin, urlparse
 import tldextract
 import yarl
@@ -98,7 +98,7 @@ async def process_url(url, setFlag, product_name, processed_sublinks=set(), prin
     async with aiohttp.ClientSession() as session:
         response = await session.get(url)
         html_content = await response.text()
-        soup = BeautifulSoup(html_content, 'lxml')
+        soup = BeautifulSoup(html_content, 'lxml', parse_only=SoupStrainer('a'))
         url_info = tldextract.extract(url)
 
         # allowed_substring = await get_allowed_substring(url_info.domain, product_name)
@@ -123,15 +123,21 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
         It then updates the set of processed sublinks.
     """
     
-    
     product_name = str(product_name).replace(' ', '-')
+    
+    sublinks = set()
 
-    # 
-    sublinks = {urljoin(url, a['href']) for a in soup.find_all('a', href=True) if fuzz.partial_ratio(product_name, yarl.URL(a['href']).path.replace('/', '-')) > 40}
+    # go through every a tag in the sublink's soup
+    for a in soup.find_all('a', href=True):
+        sublink_parts = yarl.URL(a['href']).parts
+
+        # check various parts of the link for a close matching to the product name.
+        for part in sublink_parts:
+            if fuzz.partial_ratio(product_name, part) > 40:
+                sublinks.add(urljoin(url, a['href']))
+
     # Process only new sublinks
     new_sublinks = sublinks - processed_sublinks
-    
-
 
     for sublink in new_sublinks:
         # gets tags for sublinks (returns links that link towards the product)
@@ -153,31 +159,5 @@ async def process_sub_url(url, soup, session, processed_sublinks, base_url, prod
                 print(f"Link: {sublink}")
                 print(f"Price: {sublink_price}\n\n")
 
-
     # Add processed sublinks to the set
     processed_sublinks.update(new_sublinks)
-
-
-async def extract_product_name(url):
-    """Extracts the product name from the sub-link
-    E.g. https://www.myer.com.au/p/tommy-hilfiger-essential-cotton-te-835469290-1:
-        Returns:
-            tommy-hilfiger-essential-cotton-te-835469290-1
-    """
-    # Parse the URL
-    parsed_url = urlparse(url)
-
-    # Extract the product name from the last segment of the path
-    path_segments = parsed_url.path.strip('/').split('/')
-    if path_segments:
-        product_name = path_segments[-1]
-
-        # Remove any trailing characters like ".html" or digits
-        product_name = re.sub(r'(\.html\d+)$', '', product_name)
-        
-        # Split the product name into parts and join them
-        product_name = '-'.join(filter(None, product_name.split('-')))
-        
-        return product_name
-
-    return ""  # Return an empty string if no product name is found
