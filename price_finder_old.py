@@ -50,8 +50,7 @@ async def find_product_name_element(link, soup):
 
 async def find_first_price_with_regex(soup):
     # Find the first price in the website using a regular expression
-
-    price_pattern = re.compile(r'^\d+(,\d{1,2})?$')  # Adjust the regex pattern based on your price format
+    price_pattern = re.compile(r'^\d+(,\d{1,2})?$') 
     first_price_match = soup.find(string=price_pattern)
 
     if first_price_match:
