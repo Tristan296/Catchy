@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request
 from threading import Thread
 from googlesearch import search
-from google_product_extractor import run
+from Tests.google_product_extractor import run
 import asyncio
 from fuzzywuzzy import fuzz
-from webScraper import process_url
-from image_finder import find_product_image
+from backend.webScraper import WebCrawler
+from backend.image_finder import find_product_image
 
 app = Flask(__name__)
 '''
@@ -35,14 +35,14 @@ async def main(query):
     setFlag = False
     for url in search(' '.join(query), tld="co.in", num=10, stop=20, pause=0.1):
         if fuzzy_match(query, url) > 70:
-            await process_url(url, setFlag, query)
+            await WebCrawler.process_url(url, setFlag, query)
 
     # asyncio.run(main())
     # return search
 
 @app.route('/')
 def mockup():
-    return render_template('mockup.html')
+    return render_template('/mockup.html')
 
 
 if __name__ == '__main__':

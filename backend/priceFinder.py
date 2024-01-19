@@ -1,5 +1,6 @@
 import asyncio
 import os
+import sys
 import aiohttp
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
@@ -8,6 +9,9 @@ from urllib.parse import urljoin, urlparse
 import re
 from yarl import URL
 from fuzzywuzzy import fuzz
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 class PriceScraper:
     def __init__(self, link, soup):

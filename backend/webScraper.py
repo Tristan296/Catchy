@@ -1,12 +1,20 @@
+import os
+import sys
 import aiohttp
 from bs4 import BeautifulSoup, SoupStrainer
 from urllib.parse import urljoin, urlparse
 import tldextract
 import yarl
-from image_finder import find_product_image
-import re 
 from fuzzywuzzy import fuzz
-from priceFinder import PriceScraper
+import re 
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from .image_finder import find_product_image
+from .priceFinder import PriceScraper
+
+
 
 class WebCrawler:
     def __init__(self):
