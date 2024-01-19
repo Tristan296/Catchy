@@ -1,1 +1,1 @@
- user_input = request.form['productName']
+and get_allowed_substring(sublink, sublink):
