@@ -14,12 +14,11 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 from .image_finder import find_product_image
 from .priceFinder import PriceScraper
 
-
-
 class WebCrawler:
     def __init__(self):
         self.processed_sublinks = set()
-        
+    
+    @staticmethod        
     async def get_allowed_substring(website_name, product_name, setFlag):
         """
         This method defines a dictionary that has each website assigned to its own allowed substring.
@@ -87,8 +86,13 @@ class WebCrawler:
             print(f"substring {getTag} not defined for {keyword}.")
             return setFlag
 
-
-    async def process_url(url, setFlag, product_name, processed_sublinks=set(), printed_prices=set()):
+    @staticmethod
+    async def process_url(url, setFlag, product_name, 
+                          # Default Parameters
+                          processed_sublinks=set(), 
+                          printed_prices=set(), 
+                          product_data={"Link": None, "Price": None, "Image-url": None, "Image-alt": None}):
+        
         """Processes a given URL, extracts allowed substrings 
 
         Args:
@@ -107,12 +111,15 @@ class WebCrawler:
             soup = BeautifulSoup(html_content, 'lxml', parse_only=SoupStrainer('a'))
             url_info = tldextract.extract(url)
 
-            await SublinkProcessor.process_sub_url(url, soup, session, processed_sublinks, f"https://www.{url_info.domain}.com.au/", product_name, setFlag)
-
+            product_data = await SublinkProcessor.process_sub_url(url, soup, session, processed_sublinks, 
+                                                   f"https://www.{url_info.domain}.com.au/", 
+                                                   product_name, setFlag, product_data)
+            
+        return product_data
 
 class SublinkProcessor:
     @staticmethod
-    async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name, setFlag):
+    async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name, setFlag, product_data):
         """Processes sublinks extracted from the main URL, prints product details, and updates processed sublinks set.
 
         Args:
@@ -148,7 +155,7 @@ class SublinkProcessor:
         for sublink in new_sublinks:
             # gets tags for sublinks (returns links that link towards the product)
             sublink_tags = await WebCrawler.get_allowed_substring(sublink, sublink, setFlag)
-
+            
             if sublink and sublink_tags == True:
                 # if sublink:
                 sublink_response = await session.get(sublink)
@@ -160,11 +167,23 @@ class SublinkProcessor:
                 # gets prices for sublinks (returns array of prices)
                 sublink_price, innermost_price_element = await price_scraper.find_product_name_element()
 
+                sublink_image_url, sublink_image_tag = await find_product_image(sublink, session, base_url)
                 print('sublink tags:', sublink_tags)
-                if sublink_price:
+                
+                if sublink_price and sublink_image_tag:
                     print("Found Product details:")
                     print(f"Link: {sublink}")
+                    print(f"Image src: {sublink_image_url}")
+                    print(f"Image alt: {sublink_image_tag}")
                     print(f"Price: {sublink_price}\n\n")
+                    
+                    # Update the product_data dictionary with the found details
+                    product_data["Link"] = sublink
+                    product_data["Price"] = sublink_price
+                    product_data["Image-url"] = sublink_image_url
+                    product_data["Image-alt"] = sublink_image_tag
 
         # Add processed sublinks to the set
         processed_sublinks.update(new_sublinks)
+        
+        return product_data

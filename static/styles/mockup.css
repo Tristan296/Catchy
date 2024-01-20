@@ -247,7 +247,7 @@ nav{
 }
 /* Product section styling */
 .product-section {
-    background-color: rgb(30, 30, 30);
+    background-color: rgb(215, 215, 215);
     margin: 20px;
     padding: 50px;
     display: flex;
@@ -255,37 +255,37 @@ nav{
     justify-content: space-evenly;
     align-items: center;
 }
-
 /* Product card styling */
 .product-card {
-    border: 5px solid black;
-    display: inline-block;
+    border: 5px solid rgb(158, 158, 158);
     margin: 20px;
     padding: 10px;
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
-    overflow: hidden; /* Ensure the card doesn't overflow its container */
-    width: 300px; /* Adjust the width as needed */
+    overflow: hidden;
+    width: 300px;
 }
 
 .product-card:hover {
-    transform: scale(1.05); /* Scale up on hover for a subtle interactive effect */
+    transform: scale(1.05);
 }
 
 .product-card img {
     width: 100%;
     height: 200px;
-    object-fit: scale-down; /* Maintain aspect ratio while covering the container */
+    object-fit: cover;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
 
-/* Product title info */
 .product-details {
     padding: 15px;
     text-align: left;
+}
+
+.product-card h2, p, a {
     font-family: sans-serif;
 }
 
@@ -294,15 +294,10 @@ nav{
     margin-bottom: 10px;
 }
 
-/*Shows the price*/
 .product-card p {
     font-size: 20px;
     font-weight: bold;
     color: red;
-    /* color: #555; */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 .product-card a {

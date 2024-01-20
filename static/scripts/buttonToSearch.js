@@ -10,8 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
         searchBar.classList.toggle('active', false);
         searchButtonSubmit.classList.toggle('active', false);
         backButton.classList.toggle('active', false);
-        
-
     });
 
     searchButton.addEventListener('click', function () {
