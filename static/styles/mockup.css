@@ -1,10 +1,320 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap');
+/*Font used for announcement tab*/
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Ubuntu:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Almarai&family=Montserrat:wght@400;500&family=Ubuntu:wght@500&display=swap');
+/* font-family: 'Almarai', sans-serif;
+font-family: 'Montserrat', sans-serif;
+font-family: 'Ubuntu', sans-serif; */
+@import url('https://fonts.googleapis.com/css2?family=Almarai&family=Leckerli+One&family=Montserrat:wght@100;400;500&family=Nothing+You+Could+Do&family=Ubuntu:wght@500&display=swap');
+
+/* Navbar */
+
+
 *{
-    margin: auto;
+    box-sizing: border-box;
+    position: relative;
+    margin: 0;
+    overflow-x: hidden;
+    transition: transform 1s ease;
 }
 
-.container{
+.announcement{
     width: 100%;
-    height: 100vh;
-    border: 5px solid black;
+    height: 3vh;
     display: flex;
+    justify-content: center;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    align-items: center;
+}
+
+header{
+    background-color: rgb(255, 244, 230);
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    padding: 3px 1%;
+    position: relative;
+    box-shadow: 0 20px 20px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    z-index: 2;
+}
+
+.logo{
+    width: 8%;
+    cursor: pointer;
+}
+
+nav{
+    width: 100%;
+    position: relative; /* Ensure relative positioning for child elements */
+    /* font-family: 'Almarai', sans-serif; */
+    /* font-family: 'Montserrat', sans-serif; */
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.nav-links{
+    display: inline-block;
+    justify-content: space-around; /* Adjust the spacing as needed */
+    align-items: center;
+    list-style: none;
+}
+
+.nav_links li {
+    margin-left: 4%;
+    display: inline-block;
+}
+
+/* List animation */
+.nav_links li::after{
+    content: '';
+    height: 3px;
+    width: 0%;
+    background: #ff7c02;
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    transition: 0.5s;
+}
+
+.nav_links li:hover::after{
+    width: 100%;
+}
+
+.nav_links a {
+    text-decoration: none;
+    color: black;
+    font-size: large;
+}
+
+.logo-banner{
+    width: 100%;
+    height: 90vh;
+    /* background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url(img/Catchy_Logo.png); */
+    background-image: url(../images/Catchy_Logo.png);
+    background-color: rgb(243, 225, 209);
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    transition: height 0.3s ease-in-out;
+}
+
+/* Shrinks the banner when products are searched for */
+.shrink {
+    height: 40vh !important; /* Adjust the height when products are found */
+}
+
+.banner-title{
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for centering */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.banner-title h1{
+    font-size: 60px;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 100;
+}
+
+#backButton {
+    visibility: hidden; 
+}
+
+
+#backButton.active { 
+    visibility: visible;
+    padding: 15px;
+    border: 3px solid orange;
+    background-color: rgb(243, 225, 209);
+    border-radius: 12px;
+    font-size: 15px;
+    margin-right: 10px;
+    box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer; /* Add cursor property to indicate it's clickable */
+}
+
+
+#backButton:active {
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+.search-button-submit {
+   visibility: hidden;
+}
+
+.search-button-submit.active { 
+    background-color: rgb(243, 225, 209);
+    border: none;
+    color: black;
+    padding: 15px;
+    text-align: center;
+    text-decoration: none;
+    visibility: visible;
+    font-size: 16px;
+    margin: 13px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    border: 3px solid orange;
+    width: 100px;
+    transition: width 0.7s ease-in; /* Add transition for width */
+}
+
+.search-button {
+    background-color: rgb(243, 225, 209);
+    border: none;
+    color: black;
+    padding: 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 13px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    border: 3px solid orange;
+    width: 300px;
+    transition: width 0.7s ease-in; /* Add transition for width */
+}
+
+
+.buttons {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+}
+
+#searchForm #searchBar {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: fixed;
+    width: 0;
+    opacity: 0;
+    height: 30px;
+    transition: width 0.7s ease-out, height 1s ease-out, opacity 1s ease-out;
+}
+
+#searchForm .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+#searchForm #searchButton.active {
+    /* Existing styles */
+    width: 400px;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+#searchButton.active.show-search-bar {
+    width: 300px; /* Adjusted width to match the initial state */
+    padding: 15px; /* Adjusted padding to match the initial state */
+    opacity: 1; /* Adjusted opacity to make it visible */
+    pointer-events: auto; /* Allow pointer events */
+    position: static; /* Reset position */
+}
+
+#searchButton:active {
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+#searchForm #searchBar.active {
+    display: block;
+    width: 500px;
+    height: 60px;
+    border-radius: 22px;
+    opacity: 1;
+    text-indent: 20px;
+    font-size: 15px;
+    transition: width 0.7s ease-in, height 0.4s ease-in, opacity 1s ease-in;
+}
+/* Product section styling */
+.product-section {
+    background-color: rgb(30, 30, 30);
+    margin: 20px;
+    padding: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+/* Product card styling */
+.product-card {
+    border: 5px solid black;
+    display: inline-block;
+    margin: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    overflow: hidden; /* Ensure the card doesn't overflow its container */
+    width: 300px; /* Adjust the width as needed */
+}
+
+.product-card:hover {
+    transform: scale(1.05); /* Scale up on hover for a subtle interactive effect */
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: scale-down; /* Maintain aspect ratio while covering the container */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+/* Product title info */
+.product-details {
+    padding: 15px;
+    text-align: left;
+    font-family: sans-serif;
+}
+
+.product-card h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/*Shows the price*/
+.product-card p {
+    font-size: 20px;
+    font-weight: bold;
+    color: red;
+    /* color: #555; */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.product-card a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.product-card a:hover {
+    text-decoration: underline;
 }

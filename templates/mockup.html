@@ -1,22 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYS32 - Scrapper</title>
-    <link rel="stylesheet" href="../static/styles/mockup.css">
-</head>
-<body>
-    <div class="container">
-        <form id="searchForm" action = "http://localhost:5000/search" method = "post">
-            <div class="buttons">
-                <label for="searchBar" class="visually-hidden">Enter in your product name</label>
-                <input type="text" id="searchBar" name="productName" class="animate" placeholder="Enter in your product name....">
-                <button type="button" id="searchButton" class="search-button" onclick="performSearch()">Click here to begin searching</button>
-                <button type="submit" name="user_input" id="searchButtonSubmit" class="search-button-submit">Search</button>
-            </div>
-        </form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/styles/mockup.css" />
+    <link rel="navbarstylesheet" href="../static/styles/headerNav.css" />
+    <title>Catchy</title>
+    <script src="../static/scripts/buttonToSearch.js"></script>
+    <script
+      src="https://kit.fontawesome.com/59a6cdd8fd.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="announcement">
+      Catchy Software Beta Version - Full Rights Reserved
     </div>
+    <header>
+      <img class="logo" src="../static/images/Catchy_Logo.png" alt="logo" />
+      <nav>
+        <ul class="nav_links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">About Catchy</a></li>
+          <li><a href="contact_us.html">Contact us</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="logo-banner">
+      <div class="banner-title">
+        <h1>Your Ultimate E-Commerce</h1>
+        <h1>Product Comparison Tool</h1>
+        <form
+          id="searchForm"
+          action="http://localhost:5000/search"
+          method="post"
+        >
+          <div class="buttons">
+            <button id="backButton" class="back-button">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <label for="searchBar" class="visually-hidden"
+              >Enter in your product name</label
+            >
+            <input type="text" id="searchBar" name="productName" class="animate"
+              placeholder="Enter in your product name...."/>
+            <button type="button" id="searchButton"  class="search-button" onclick="performSearch()">
+              Click here to begin searching
+            </button>
+            <button type="submit"  id="searchButtonSubmit" class="search-button-submit">
+              Search
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+<!-- 
+    <div id="productSection"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchForm = document.getElementById("searchForm");
+        const productSection = document.getElementById("productSection");
     
-</body>
+        searchForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+    
+          const formData = new FormData(searchForm);
+          const productName = formData.get("productName");
+    
+          fetch("http://localhost:5000/search", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ productName: productName }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Received data:", data);
+    
+              if (data.products && data.products.length > 0) {
+                productSection.innerHTML = ""; // Clear existing product cards
+    
+                data.products.forEach((product) => {
+                  // Check if all necessary data is defined before creating the card
+                  if (
+                    product["Image url"] &&
+                    product["Image alt"] &&
+                    product["Link"] &&
+                    product["Price"]
+                  ) {
+                    const card = document.createElement("div");
+                    const image = document.createElement("img");
+    
+                    image.className = "product-img-src";
+                    card.className = "product-card";
+    
+                    card.innerHTML = `
+                        <img src="${product["Image url"]}" alt="${product["Image alt"]}">
+                        <div class="product-details">
+                            <h3>${product['Image alt']}</h3>
+                            <a href="${product["Link"]}">${product["Link"]}</a>
+                            <p>${product["Price"]}</p>
+                        </div>
+                    `;
+    
+                    // Create space (shrink banner image slightly to accommodate new products)
+                    const banner_img = document.querySelector(".logo-banner");
+                    banner_img.classList.add("shrink");
+    
+                    productSection.appendChild(card);
+                  }
+                });
+              } else {
+                console.error("Invalid or empty products array:", data.products);
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching products:", error);
+            });
+        });
+      });
+    </script> -->
+  </body>
 </html>

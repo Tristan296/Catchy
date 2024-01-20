@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap');
+/*Font used for announcement tab*/
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Ubuntu:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Almarai&family=Montserrat:wght@400;500&family=Ubuntu:wght@500&display=swap');
+/* font-family: 'Almarai', sans-serif;
+font-family: 'Montserrat', sans-serif;
+font-family: 'Ubuntu', sans-serif; */
+@import url('https://fonts.googleapis.com/css2?family=Almarai&family=Leckerli+One&family=Montserrat:wght@100;400;500&family=Nothing+You+Could+Do&family=Ubuntu:wght@500&display=swap');
+
+.contact_us_form { 
+    display: flex;
+    row-gap: 10px;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+}
+
+.contact_us_container form {
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.contact_us_outer { 
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.social-fatih,
+.social-tristan {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+    background-color: whitesmoke;
+    margin: 50px;
+}
+
+.social-fatih img,
+.social-tristan img {
+    width: 100%; /* Make the image fill the container width */
+    height: auto; /* Maintain the aspect ratio */
+    margin-bottom: 15px; /* Add space between image and text */
+}
+
+.social-fatih, .social-tristan {
+    padding: 80px;
+    box-shadow: 2px 2px 20px rgb(206, 206, 206);
+    transition: ease-out 0.2s;
+}
+
+.social-fatih:hover, .social-tristan:hover
+{
+    box-shadow: 2px 2px 20px rgb(140, 140, 140);
+    transition: ease-in 0.3s;
+}
+
+.contact_us_container { 
+    /* display: flex; */
+    padding: 30px;
+    position: relative;
+    width: 100%;
+    font-family: 'Ubuntu';
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.contact_us_form input{ 
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    border: none;
+    background-color: rgb(242, 242, 242);
+    border-radius: 5px;
+    height: 28px;
+    font-size: 18px;
+    border: 2px black ridge;
+}
+
+.contact_us_form button {
+    background-image: linear-gradient(0, #e79418, #febf03);
+    background-color: black;
+    color: white;
+    background-size: 0;
+    transition: .8s;
+    background-repeat: no-repeat;
+    width: 100px;
+    height: 35px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.contact_us_form button:hover {
+    background-size: 100%;
+    color: white;
+}
+
+.contact_us_form #message { 
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    min-height: 50px;
+    justify-content: center;
+    border: none;
+    background-color: rgb(242, 242, 242);
+    border-radius: 5px;
+    height: 25px;
+    font-size: auto;
+    resize: none;
+}
