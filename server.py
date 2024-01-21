@@ -6,6 +6,7 @@ from fuzzywuzzy import fuzz
 from backend.webScraper import WebCrawler
 from flask_cors import CORS
 
+from backend import priceFinder
 app = Flask(__name__)
 CORS(app, origins="*")
 
@@ -66,8 +67,9 @@ def fetchData():
 @app.route('/showResults', methods=['GET', 'POST'])
 def showResults():
     names= ['bob', 'joe', 'jim', 'paul']
+    string = priceFinder.test_array
     global global_products_data
-    return render_template('scrapedLinks.html', products=global_products_data)
+    return render_template('scrapedLinks.html', products=string)
     # return render_template('scrapedLinks.html', products=names)
 
 @app.route('/')
