@@ -13,6 +13,9 @@ from fuzzywuzzy import fuzz
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
+global test_array
+test_array =  ['Item 1', 'Item 2', 'Item 3', 'Item 4']
+
 class PriceScraper:
     def __init__(self, link, soup):
         self.link = link
