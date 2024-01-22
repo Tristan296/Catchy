@@ -13,6 +13,8 @@ app = Flask(__name__)
 CORS(app, origins="*")
 socketio = SocketIO(app, async_mode='gevent')
 
+#delete this paragraph
+
 # Variable to store product data globally
 global_products_data = []
 
