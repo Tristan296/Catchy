@@ -24,7 +24,7 @@
           <li><a href="home.html">Home</a></li>
           <li><a href="#">Services</a></li>
           <li><a href="#">About Catchy</a></li>
-          <li><a href="contact_us.html">Contact us</a></li>
+          <li><a href="../static/contact_us.html">Contact us</a></li>
         </ul>
       </nav>
     </header>
@@ -54,87 +54,41 @@
 
     <div id="productSection" class="product-section"></div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchForm = document.getElementById("searchForm");
-            const productSection = document.getElementById("productSection");
-            let displayedProducts = [];  // Keep track of displayed products
-
-            searchForm.addEventListener("submit", function (event) {
-                event.preventDefault();
-
-                const formData = new FormData(searchForm);
-                const productName = formData.get("productName");
-
-                fetch("http://localhost:5000/search", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: new URLSearchParams(formData).toString(),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        console.log("Received data:", data);
-
-                        // Continuous polling to fetch updated product data
-                        setInterval(function () {
-                            fetch("http://localhost:5000/fetchData")
-                                .then((response) => response.json())
-                                .then((data) => {
-                                    console.log("Fetched product data:", data);
-
-                                    // Create and append new product cards
-                                    data.products.forEach((product) => {
-                                        if (
-                                            product["Image-url"] &&
-                                            product["Image-alt"] &&
-                                            product["Link"] &&
-                                            product["Price"] &&
-                                            !displayedProducts.includes(product["Link"])
-                                        ) {
-                                            const card = document.createElement("div");
-                                        card.className = "product-card";
-
-                                        const link = document.createElement("a");
-                                        link.href = product["Link"];
-                                        link.target = "_blank";
-
-                                        const image = document.createElement("img");
-                                        image.src = product["Image-url"];
-                                        image.alt = product["Image-alt"];
-
-                                        const price = document.createElement("p");
-                                        price.textContent = product["Price"];
-
-                                        link.appendChild(image);
-                                        link.appendChild(price);
-                                        card.appendChild(link);
-
-                                        productSection.appendChild(card);
-                                            
-                                            // Create space (shrink banner image slightly to accommodate new products)
-                                            const banner_img = document.querySelector(".logo-banner");
-                                            banner_img.classList.add("shrink");
-
-                                            // Append the card to the product section
-                                            productSection.appendChild(card);
-
-                                            // Add the product link to the displayedProducts array
-                                            displayedProducts.push(product["Link"]);
-                                        }
-                                    });
-                                })
-                                .catch((error) => {
-                                    console.error("Error fetching product data:", error);
-                                });
-                        }, 5000); // Fetch every 5 seconds
-                    })
-                    .catch((error) => {
-                        console.error("Error fetching products:", error);
-                    });
-            });
-        });
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <img src="../static/images/Catchy_Logo_B&W.png" width="100px" />
+          </div>
+          <div class="footer-links">
+            <ul class="footer-menu">
+              <li><a href="#">Home</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-social">
+            <ul class="social-icons">
+              <li>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+              </li>
+              <li>
+                <a href="https://www.instagram.com/sys32apps/"><i class="fab fa-instagram"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="../static/scripts/getProducts.js"></script>
     </script>
 </body>
 
