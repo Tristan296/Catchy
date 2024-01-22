@@ -33,8 +33,9 @@ class WebCrawler:
         """
         # product_name = '-'.join(product_name)
         allowed_substrings = {
+            "crossroads": '/product',
             "binglee": '/products/',
-            "jd-sports": '/product/',
+            # "jd-sports": '/product/', # images not working, and product names are not useful: 'jdsport'
             "footlocker": '/en/product/',
             "insport": '/sale/product/' or '/product/',
             "kogan": '/buy/',
@@ -63,7 +64,12 @@ class WebCrawler:
         # Extract the keyword from the hostname:
         #Example: https://www.myer.com.au/p/health.......
         #Will get "myer"
-        keyword = parsed_url.hostname.split('.')[1]
+        if(parsed_url.hostname):
+            keyword = parsed_url.hostname.split('.')[1]
+        else:
+            print('Parsed URL has no hostname. Skipping this link.')
+            return  
+            
 
         #Getting the tag from the website 
         #Example: https://www.myer.com.au/p/health.......
@@ -87,11 +93,11 @@ class WebCrawler:
             return setFlag
 
     @staticmethod
-    async def process_url(url, setFlag, product_name, 
+    async def process_url(url, setFlag, product_name, socketio,
                           # Default Parameters
                           processed_sublinks=set(), 
                           printed_prices=set(), 
-                          product_data={"Link": None, "Price": None, "Image-url": None, "Image-alt": None}):
+                          product_data=[None, None, None, None]):
         
         """Processes a given URL, extracts allowed substrings 
 
@@ -113,13 +119,13 @@ class WebCrawler:
 
             product_data = await SublinkProcessor.process_sub_url(url, soup, session, processed_sublinks, 
                                                    f"https://www.{url_info.domain}.com.au/", 
-                                                   product_name, setFlag, product_data)
+                                                   product_name, setFlag, product_data, socketio)
             
         return product_data
 
 class SublinkProcessor:
     @staticmethod
-    async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name, setFlag, product_data):
+    async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name, setFlag, product_data, socketio):
         """Processes sublinks extracted from the main URL, prints product details, and updates processed sublinks set.
 
         Args:
@@ -177,13 +183,12 @@ class SublinkProcessor:
                     print(f"Image alt: {sublink_image_tag}")
                     print(f"Price: {sublink_price}\n\n")
                     
-                    # Update the product_data dictionary with the found details
-                    product_data["Link"] = sublink
-                    product_data["Price"] = sublink_price
-                    product_data["Image-url"] = sublink_image_url
-                    product_data["Image-alt"] = sublink_image_tag
+                     # Emit product data for each sublink
+                    socketio.emit('product_data', {"status": "success", "products": [[sublink, sublink_price, sublink_image_url, sublink_image_tag]]})
 
         # Add processed sublinks to the set
-        processed_sublinks.update(new_sublinks)
+        processed_sublinks = list(processed_sublinks)
+        processed_sublinks.extend(new_sublinks)
+        processed_sublinks = set(processed_sublinks)
         
         return product_data
