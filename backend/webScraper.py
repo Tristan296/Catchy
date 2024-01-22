@@ -53,6 +53,7 @@ class WebCrawler:
             "nike": '/t/',
             "puma": '/pd/', 
             "asics": '/en/au/',
+            "ebay": '/itm/',
             "culturekings": '/products/',
             "harveynorman": str(product_name)
         }
