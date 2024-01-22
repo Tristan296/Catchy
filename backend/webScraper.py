@@ -87,7 +87,7 @@ class WebCrawler:
             return setFlag
 
     @staticmethod
-    async def process_url(url, setFlag, product_name, 
+    async def process_url(url, setFlag, product_name, socketio,
                           # Default Parameters
                           processed_sublinks=set(), 
                           printed_prices=set(), 
@@ -113,13 +113,13 @@ class WebCrawler:
 
             product_data = await SublinkProcessor.process_sub_url(url, soup, session, processed_sublinks, 
                                                    f"https://www.{url_info.domain}.com.au/", 
-                                                   product_name, setFlag, product_data)
+                                                   product_name, setFlag, product_data, socketio)
             
         return product_data
 
 class SublinkProcessor:
     @staticmethod
-    async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name, setFlag, product_data):
+    async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name, setFlag, product_data, socketio):
         """Processes sublinks extracted from the main URL, prints product details, and updates processed sublinks set.
 
         Args:
@@ -177,7 +177,8 @@ class SublinkProcessor:
                     print(f"Image alt: {sublink_image_tag}")
                     print(f"Price: {sublink_price}\n\n")
                     
-                    product_data = [sublink, sublink_price, sublink_image_url, sublink_image_tag]
+                     # Emit product data for each sublink
+                    socketio.emit('product_data', {"status": "success", "products": [[sublink, sublink_price, sublink_image_url, sublink_image_tag]]})
 
         # Add processed sublinks to the set
         processed_sublinks = list(processed_sublinks)

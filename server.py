@@ -25,9 +25,14 @@ async def main(query):
 
     for url in search(' '.join(query), tld="co.in", num=10, stop=20, pause=0.1):
         if fuzzy_match(query, url) > 70:
-            product_data = await WebCrawler.process_url(url, setFlag, query)
+            product_data = await WebCrawler.process_url(url, setFlag, query, socketio)
             products_data.append(product_data)
-            socketio.emit('product_data', {"status": "success", "products": [product_data]})
+            # socketio.emit('product_data', {"status": "success", "products": [product_data]})
+            
+    # Emit all found product data at once
+    if products_data:
+        socketio.emit('product_data', {"status": "success", "products": products_data})
+
 
 def run_scraping_task(query):
     loop = asyncio.new_event_loop()
