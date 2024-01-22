@@ -34,7 +34,7 @@ class PriceScraper:
             if first_price:
                 return f"${first_price}", None
             else:
-                print("No price found on the website.")
+                print(f"No price found in {self.link}.")
                 return None, None
 
     async def find_first_price_with_regex(self):

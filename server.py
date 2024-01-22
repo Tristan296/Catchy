@@ -23,7 +23,7 @@ async def main(query):
     setFlag = False
     products_data = []
 
-    for url in search(' '.join(query), tld="co.in", num=10, stop=20, pause=0.6):
+    for url in search(' '.join(query), tld="co.in", num=10, stop=12, pause=0.1):
         print(url)
         if fuzzy_match(query, url) > 70:
             product_data = await WebCrawler.process_url(url, setFlag, query, socketio)
