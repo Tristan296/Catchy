@@ -8,8 +8,6 @@ font-family: 'Ubuntu', sans-serif; */
 @import url('https://fonts.googleapis.com/css2?family=Almarai&family=Leckerli+One&family=Montserrat:wght@100;400;500&family=Nothing+You+Could+Do&family=Ubuntu:wght@500&display=swap');
 
 /* Navbar */
-
-
 *{
     box-sizing: border-box;
     position: relative;
@@ -88,6 +86,10 @@ nav{
     font-size: large;
 }
 
+.nav_links a:hover {
+    border-bottom: #000000 solid 5px; 
+}
+
 .logo-banner{
     width: 100%;
     height: 90vh;
@@ -126,7 +128,6 @@ nav{
     visibility: hidden; 
 }
 
-
 #backButton.active { 
     visibility: visible;
     padding: 15px;
@@ -138,7 +139,6 @@ nav{
     box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3);
     cursor: pointer; /* Add cursor property to indicate it's clickable */
 }
-
 
 #backButton:active {
     box-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
@@ -185,7 +185,6 @@ nav{
     width: 300px;
     transition: width 0.7s ease-in; /* Add transition for width */
 }
-
 
 .buttons {
     padding: 20px;
@@ -247,7 +246,7 @@ nav{
 }
 /* Product section styling */
 .product-section {
-    background-color: rgb(215, 215, 215);
+    background-color: rgb(255, 255, 255);
     margin: 20px;
     padding: 50px;
     display: flex;
@@ -255,12 +254,13 @@ nav{
     justify-content: space-evenly;
     align-items: center;
 }
+
 /* Product card styling */
 .product-card {
     border: 5px solid rgb(158, 158, 158);
     margin: 20px;
     padding: 10px;
-    background-color: #fff;
+    background-color: #ffffff;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
@@ -312,4 +312,85 @@ nav{
 
 .product-card a:hover {
     text-decoration: underline;
+}
+
+
+footer {
+    font-size: 18px;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 30px 0;
+}
+
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 50px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.footer-menu li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.footer-menu li:last-child {
+    margin-right: 0;
+}
+
+.footer-menu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.social-icons {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.social-icons li {
+    margin-right: 10px;
+}
+
+.social-icons li:last-child {
+    margin-right: 0;
+}
+
+.social-icons a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer-menu {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .footer-menu li {
+        display: block;
+        margin-bottom: 10px;
+    }
 }

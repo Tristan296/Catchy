@@ -5,10 +5,13 @@ import asyncio
 from fuzzywuzzy import fuzz
 from backend.webScraper import WebCrawler
 from flask_cors import CORS
+from flask_socketio import SocketIO
+from gevent import monkey
 
-from backend import priceFinder
+monkey.patch_all()
 app = Flask(__name__)
 CORS(app, origins="*")
+socketio = SocketIO(app, async_mode='gevent')
 
 # Variable to store product data globally
 global_products_data = []
@@ -22,21 +25,20 @@ async def main(query):
 
     for url in search(' '.join(query), tld="co.in", num=10, stop=20, pause=0.1):
         if fuzzy_match(query, url) > 70:
-            product_data = await WebCrawler.process_url(url, setFlag, query)
+            product_data = await WebCrawler.process_url(url, setFlag, query, socketio)
             products_data.append(product_data)
+            # socketio.emit('product_data', {"status": "success", "products": [product_data]})
+            
+    # Emit all found product data at once
+    if products_data:
+        socketio.emit('product_data', {"status": "success", "products": products_data})
 
-    # Store the product data globally
-    global global_products_data
-    global_products_data = products_data
-
-    return products_data
 
 def run_scraping_task(query):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        result = loop.run_until_complete(main(query))
-        return result
+        loop.run_until_complete(main(query))
     finally:
         loop.close()
 
@@ -48,8 +50,7 @@ def searchItem():
 
     query = user_input.split(' ')
 
-    scraping_thread = Thread(target=run_scraping_task, args=(query,))
-    scraping_thread.start()
+    socketio.start_background_task(target=run_scraping_task, query=query)
 
     '''
         url_for: shows the path to flask method. Ours will be the method called "showResults()"
@@ -77,4 +78,4 @@ def mockup():
     return render_template('/mockup.html')
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    socketio.run(app, port=5000, debug=True)
