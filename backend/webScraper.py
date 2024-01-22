@@ -1,4 +1,3 @@
-import asyncio
 import os
 import sys
 import aiohttp
@@ -34,7 +33,6 @@ class WebCrawler:
         """
         # product_name = '-'.join(product_name)
         allowed_substrings = {
-            "crossroads": '/product',
             "binglee": '/products/',
             # "jd-sports": '/product/', # images not working, and product names are not useful: 'jdsport'
             "footlocker": '/en/product/',
@@ -62,37 +60,31 @@ class WebCrawler:
         # Parse the URL
         parsed_url = urlparse(website_name)
 
-        if parsed_url:
-            # Extract the keyword from the hostname:
-            #Example: https://www.myer.com.au/p/health.......
-            #Will get "myer"
-            if(parsed_url.hostname):
-                keyword = parsed_url.hostname.split('.')[1]
-            else:
-                print('Parsed URL has no hostname. Skipping this link.')
-                return  
-                    
+        # Extract the keyword from the hostname:
+        #Example: https://www.myer.com.au/p/health.......
+        #Will get "myer"
+        keyword = parsed_url.hostname.split('.')[1]
 
-            #Getting the tag from the website 
-            #Example: https://www.myer.com.au/p/health.......
-            #Will get "/p/"
-            # getTag = f'/{parsed_url.path.split("/")[1]}/'
-            path_parts = parsed_url.path.split('/')
-            if len(path_parts) > 1: #Some links are empty and to prevent index out of bounds I added if statements
-                required_part = f'/{path_parts[1]}/'
-                getTag = required_part
-            else:
-                getTag = path_parts
+        #Getting the tag from the website 
+        #Example: https://www.myer.com.au/p/health.......
+        #Will get "/p/"
+        # getTag = f'/{parsed_url.path.split("/")[1]}/'
+        path_parts = parsed_url.path.split('/')
+        if len(path_parts) > 1: #Some links are empty and to prevent index out of bounds I added if statements
+            required_part = f'/{path_parts[1]}/'
+            getTag = required_part
+        else:
+            getTag = path_parts
 
-            if getTag in allowed_substrings.values():
-                # substring = allowed_substrings.get(website_name, "default")
-                print(f"substring allowed for {website_name} is {getTag}.")
-                setFlag = True
-                return setFlag
-            else:
-                setFlag = False
-                print(f"substring {getTag} not defined for {keyword}.")
-                return setFlag
+        if getTag in allowed_substrings.values():
+            # substring = allowed_substrings.get(website_name, "default")
+            print(f"substring allowed for {website_name} is {getTag}.")
+            setFlag = True
+            return setFlag
+        else:
+            setFlag = False
+            print(f"substring {getTag} not defined for {keyword}.")
+            return setFlag
 
     @staticmethod
     async def process_url(url, setFlag, product_name, socketio,
@@ -113,35 +105,21 @@ class WebCrawler:
             print(f"Skipping already processed URL: {url}")
             return
 
-        async def process_sub_url_wrapper(sublink, session, processed_sublinks, base_url, product_name, setFlag, product_data, socketio):
-            return await SublinkProcessor.process_sub_url(sublink, session, processed_sublinks, base_url, product_name, setFlag, product_data, socketio)
-
-        tasks = []
-
         async with aiohttp.ClientSession() as session:
             response = await session.get(url)
             html_content = await response.text()
             soup = BeautifulSoup(html_content, 'lxml', parse_only=SoupStrainer('a'))
             url_info = tldextract.extract(url)
-            base_url = urljoin(url, "/")  # Use urljoin for base URL
 
-            for a in soup.find_all('a', href=True):
-                sublink_parts = yarl.URL(a['href']).parts
-                sublink = urljoin(url, a['href'])
-                joined_parts = ' '.join(sublink_parts)
-
-                if fuzz.partial_ratio(product_name, joined_parts) > 40:
-                    # Include 'socketio' in the arguments
-                    tasks.append(process_sub_url_wrapper(sublink, session, processed_sublinks, base_url, product_name, setFlag, product_data, socketio))
-
-            await asyncio.gather(*tasks)
-
+            product_data = await SublinkProcessor.process_sub_url(url, soup, session, processed_sublinks, 
+                                                   f"https://www.{url_info.domain}.com.au/", 
+                                                   product_name, setFlag, product_data, socketio)
+            
         return product_data
-
 
 class SublinkProcessor:
     @staticmethod
-    async def process_sub_url(url, session, processed_sublinks, base_url, product_name, setFlag, product_data, socketio):
+    async def process_sub_url(url, soup, session, processed_sublinks, base_url, product_name, setFlag, product_data, socketio):
         """Processes sublinks extracted from the main URL, prints product details, and updates processed sublinks set.
 
         Args:
@@ -159,42 +137,52 @@ class SublinkProcessor:
         """
         
         product_name = str(product_name).replace(' ', '-')
+        
         sublinks = set()
 
-        async with session.get(url) as sublink_response:
-            sublink_html_content = await sublink_response.text()
-
-        sublink_soup = BeautifulSoup(sublink_html_content, 'lxml')
-        sublink_text_content = sublink_soup.get_text()
-
-        for a in sublink_soup.find_all('a', href=True):
+        # go through every a tag in the sublink's soup
+        for a in soup.find_all('a', href=True):
             sublink_parts = yarl.URL(a['href']).parts
-            joined_parts = ' '.join(sublink_parts)
 
-            if fuzz.partial_ratio(product_name, joined_parts) > 40:
-                sublinks.add(urljoin(url, a['href']))
+            # check various parts of the link for a close matching to the product name.
+            for part in sublink_parts:
+                if fuzz.partial_ratio(product_name, part) > 40:
+                    sublinks.add(urljoin(url, a['href']))
 
+        # Process only new sublinks
         new_sublinks = sublinks - processed_sublinks
 
         for sublink in new_sublinks:
+            # gets tags for sublinks (returns links that link towards the product)
             sublink_tags = await WebCrawler.get_allowed_substring(sublink, sublink, setFlag)
-
+            
             if sublink and sublink_tags == True:
+                # if sublink:
+                sublink_response = await session.get(sublink)
+                sublink_html_content = await sublink_response.text()
+                sublink_soup = BeautifulSoup(sublink_html_content, 'lxml')
+                sublink_text_content = sublink_soup.get_text()
+
                 price_scraper = PriceScraper(sublink, sublink_soup)
+                # gets prices for sublinks (returns array of prices)
                 sublink_price, innermost_price_element = await price_scraper.find_product_name_element()
+
                 sublink_image_url, sublink_image_tag = await find_product_image(sublink, session, base_url)
+                print('sublink tags:', sublink_tags)
                 
                 if sublink_price and sublink_image_tag:
-                    print_product_details(sublink, sublink_image_url, sublink_image_tag, sublink_price)
-                    # Update the following line to exclude 'socketio'
+                    print("Found Product details:")
+                    print(f"Link: {sublink}")
+                    print(f"Image src: {sublink_image_url}")
+                    print(f"Image alt: {sublink_image_tag}")
+                    print(f"Price: {sublink_price}\n\n")
+                    
+                     # Emit product data for each sublink
                     socketio.emit('product_data', {"status": "success", "products": [[sublink, sublink_price, sublink_image_url, sublink_image_tag]]})
 
-        processed_sublinks.update(new_sublinks)
+        # Add processed sublinks to the set
+        processed_sublinks = list(processed_sublinks)
+        processed_sublinks.extend(new_sublinks)
+        processed_sublinks = set(processed_sublinks)
+        
         return product_data
-    
-def print_product_details(link, image_url, image_tag, price):
-    print("Found Product details:")
-    print(f"Link: {link}")
-    print(f"Image src: {image_url}")
-    print(f"Image alt: {image_tag}")
-    print(f"Price: {price}\n\n")

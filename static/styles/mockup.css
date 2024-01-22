@@ -5,7 +5,6 @@
 /* font-family: 'Almarai', sans-serif;
 font-family: 'Montserrat', sans-serif;
 font-family: 'Ubuntu', sans-serif; */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Almarai&family=Leckerli+One&family=Montserrat:wght@100;400;500&family=Nothing+You+Could+Do&family=Ubuntu:wght@500&display=swap');
 
 /* Navbar */
@@ -258,7 +257,7 @@ nav{
 
 /* Product card styling */
 .product-card {
-    border: 2px solid rgb(158, 158, 158);
+    border: 5px solid rgb(158, 158, 158);
     margin: 20px;
     padding: 10px;
     background-color: #ffffff;
@@ -277,7 +276,6 @@ nav{
     width: 100%;
     height: 200px;
     object-fit: cover;
-    image-rendering: optimizeQuality;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
@@ -288,7 +286,7 @@ nav{
 }
 
 .product-card h2, p, a {
-    font-family: "Open Sans";
+    font-family: sans-serif;
 }
 
 .product-card h2 {
@@ -299,13 +297,12 @@ nav{
 .product-card p {
     font-size: 20px;
     font-weight: bold;
-    color: rgb(0, 0, 0);
+    color: red;
 }
 
 .product-card a {
     text-decoration: none;
     color: #007bff;
-    font-size: 13px;
     font-weight: bold;
     display: block;
     overflow: hidden;

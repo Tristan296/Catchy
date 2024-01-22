@@ -35,11 +35,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Append the card to the product section
         productSection.appendChild(card);
-
-        // Create space (shrink banner image slightly to accommodate new products)
-        const banner_img = document.querySelector(".logo-banner");
-        banner_img.classList.add("shrink");
-        productSection.appendChild(card);
       }
     });
   });
