@@ -1,5 +1,5 @@
 from threading import Thread
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from googlesearch import search
 import asyncio
 from fuzzywuzzy import fuzz
@@ -43,6 +43,7 @@ def run_scraping_task(query):
     finally:
         loop.close()
 
+#This gets data from userInput and sends it to priceFinder.py as input
 @app.route('/search', methods=['POST'])
 def searchItem():
     user_input = request.form['productName']
@@ -52,12 +53,26 @@ def searchItem():
 
     socketio.start_background_task(target=run_scraping_task, query=query)
 
-    return jsonify({"status": "success", "message": "Scraping task initiated."})
+    '''
+        url_for: shows the path to flask method. Ours will be the method called "showResults()"
+                 This will takes us to the 'scrapedLinks.html' page
+    '''
+    return redirect(url_for('showResults'))
+    # return jsonify({"status": "success", "message": "Scraping task initiated."})
+
 
 @app.route('/fetchData')
 def fetchData():
     global global_products_data
     return jsonify({"status": "success", "products": global_products_data})
+
+@app.route('/showResults', methods=['GET', 'POST'])
+def showResults():
+    names= ['bob', 'joe', 'jim', 'paul']
+    string = priceFinder.test_array
+    global global_products_data
+    return render_template('scrapedLinks.html', products=string)
+    # return render_template('scrapedLinks.html', products=names)
 
 @app.route('/')
 def mockup():
