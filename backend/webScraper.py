@@ -33,6 +33,7 @@ class WebCrawler:
         """
         # product_name = '-'.join(product_name)
         allowed_substrings = {
+            "crossroads": '/product',
             "binglee": '/products/',
             # "jd-sports": '/product/', # images not working, and product names are not useful: 'jdsport'
             "footlocker": '/en/product/',
@@ -63,7 +64,12 @@ class WebCrawler:
         # Extract the keyword from the hostname:
         #Example: https://www.myer.com.au/p/health.......
         #Will get "myer"
-        keyword = parsed_url.hostname.split('.')[1]
+        if(parsed_url.hostname):
+            keyword = parsed_url.hostname.split('.')[1]
+        else:
+            print('Parsed URL has no hostname. Skipping this link.')
+            return  
+            
 
         #Getting the tag from the website 
         #Example: https://www.myer.com.au/p/health.......
