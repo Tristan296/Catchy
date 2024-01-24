@@ -1,3 +1,4 @@
+import os
 from threading import Thread
 from flask import Flask, render_template, request, jsonify
 from googlesearch import search
@@ -12,6 +13,9 @@ monkey.patch_all()
 app = Flask(__name__)
 CORS(app, origins="*")
 socketio = SocketIO(app, async_mode='gevent')
+
+# Set the GEVENT_SUPPORT environment variable
+os.environ['GEVENT_SUPPORT'] = 'True'
 
 # Variable to store product data globally
 global_products_data = []

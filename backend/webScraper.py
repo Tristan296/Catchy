@@ -13,6 +13,7 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from .image_finder import find_product_image
 from .priceFinder import PriceScraper
+from .descriptionFinder import find_product_description
 
 class WebCrawler:
     def __init__(self):
@@ -167,8 +168,11 @@ class SublinkProcessor:
                 price_scraper = PriceScraper(sublink, sublink_soup)
                 # gets prices for sublinks (returns array of prices)
                 sublink_price, innermost_price_element = await price_scraper.find_product_name_element()
-
+        
                 sublink_image_url, sublink_image_tag = await find_product_image(sublink, session, base_url)
+                
+                sublink_description = await find_product_description(sublink, session)
+
                 print('sublink tags:', sublink_tags)
                 
                 if sublink_price and sublink_image_tag:
@@ -176,7 +180,8 @@ class SublinkProcessor:
                     print(f"Link: {sublink}")
                     print(f"Image src: {sublink_image_url}")
                     print(f"Image alt: {sublink_image_tag}")
-                    print(f"Price: {sublink_price}\n\n")
+                    print(f"Price: {sublink_price}")
+                    print(f"Description: {sublink_description}\n\n")
                     
                      # Emit product data for each sublink
                     socketio.emit('product_data', {"status": "success", "products": [[sublink, sublink_price, sublink_image_url, sublink_image_tag]]})
