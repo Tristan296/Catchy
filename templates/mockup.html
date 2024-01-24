@@ -38,6 +38,7 @@
           action="http://localhost:5000/search"
           method="post"
         >
+        
           <div class="buttons">
             <button id="backButton" class="back-button" title="Go Back">
               <i class="fas fa-arrow-left"></i>
@@ -72,7 +73,19 @@
       </div>
     </div>
 
-    <div id="productSection" class="product-section"></div>
+    <div class="searchFilters">
+      <div class="sort-dropdown">
+        Sort By:
+        <select id="sortOptions" name="sortOption" class="sort-options">
+          <option value="lowToHigh">Low to High</option>
+          <option value="highToLow">High to Low</option>
+          <option value="relevance">Relevance</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="productSection" class="product-section">
+    </div>
 
     <footer class="footer">
       <div class="container">

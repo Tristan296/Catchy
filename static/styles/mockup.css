@@ -394,3 +394,25 @@ footer {
         margin-bottom: 10px;
     }
 }
+
+/* Sorting dropdown menu */
+/* .sort-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-right: 50px;
+    margin-top: 50px;
+    font-family: sans-serif;
+    gap: 10px;
+}
+  
+  .sort-options {
+    margin-right: 10px;
+    border: 0.5px solid #e7e7e7;
+    border-radius: 4px;
+    width: 120px;
+    background-color: white;
+    color: #333;
+    height: 30px;
+    height: 25px; 
+  } */
