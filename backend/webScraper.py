@@ -171,7 +171,7 @@ class SublinkProcessor:
         
                 sublink_image_url, sublink_image_tag = await find_product_image(sublink, session, base_url)
                 
-                sublink_description = await find_product_description(sublink, session)
+                sublink_description = await find_product_description(sublink, session, product_name)
 
                 print('sublink tags:', sublink_tags)
                 

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 
-async def find_product_description(link, session):
+async def find_product_description(link, session, product_name):
     async with session.get(link) as response:
         # Ensure that the response status is OK
         if response.status == 200:
@@ -12,23 +12,21 @@ async def find_product_description(link, session):
             soup = BeautifulSoup(html, 'lxml')
 
             # Find all span tags with "description" in their text
-            span_elements = soup.find_all('span', text=lambda text: text is not None and fuzz.partial_ratio("description", text.lower()))
+            span_elements = soup.find_all('span', text=lambda text: text is not None and fuzz.partial_ratio(r"(description|info)", text.lower()))
 
             for s in span_elements:
                 # Get the text content of the span
                 text_content = s.text
 
                 if text_content:
-                    span_elements = soup.find_all('span', text=lambda text: text and "description" in text.lower())
-                    list_element = await find_list_element_after_description(s)
+                    list_element, innermost_child = await find_list_element_after_description(s, product_name)
                     if list_element:
-                        print(f"Found List: {list_element.text}")
-                        return text_content, list_element.text
+                        print(f"Found List: {list_element}")
+                        return text_content, list_element
 
     return "N/A"
 
-
-async def find_list_element_after_description(matched_span):
+async def find_list_element_after_description(matched_span, product_name):
     # Get the parent of the matched span
     parent_tag = matched_span.find_parent()
 
@@ -37,11 +35,15 @@ async def find_list_element_after_description(matched_span):
 
     # Look for a list in the next siblings
     while next_sibling:
-        if await is_ul_or_li_element(next_sibling):
-            return next_sibling
+        if next_sibling:
+            innermost_child = next_sibling.find(lambda tag: not tag.find_all(), recursive=False)
+
+            if innermost_child:
+                price_text = innermost_child.text.strip()
+
+                return price_text, innermost_child
+
+        # Move to the next sibling
         next_sibling = next_sibling.find_next_sibling()
 
-    return None
-
-async def is_ul_or_li_element(tag):
-    return tag.name == 'ul' or tag.name == 'li'
+    return None, None
