@@ -14,15 +14,14 @@ nlp = spacy.load("en_core_web_sm")
 
 # Annotated examples
 TRAIN_DATA = [
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE300H in Grey to wishlist$319.00$249.00", {"entities": [(4, 61, "ORG"), (76, 81, "MONEY")]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE300B in Black to wishlist$319.00$249.00", {"entities": [(4, 61, "ORG"), (76, 81, "MONEY")]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE200H in Grey to wishlist$249.00$189.00", {"entities": [(4, 60, "ORG"), (75, 80, "MONEY"),]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE200L in Blue to wishlist$249.00$189.00", {"entities": [(4, 60, "ORG"), (74, 79, "MONEY"),]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXG300B in Black to wishlist$479.00$383.20", {"entities": [(4, 61, "ORG"), (74, 79, "MONEY")]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXG300H in Grey to wishlist$479.00$383.20", {"entities": [(4, 60, "ORG"), (74, 79, "MONEY"),]}),
-    ("Add Sony Linkbuds S WFLS900NB in Black to wishlist$349.95$279.96", {"entities": [(4, 38, "ORG"), (67, 72, "MONEY")]}),
-    ("Add Sony Sony Black On Ear Noise Cancelling Headphones MDRZX110NC to wishlist$99.95$79.95", {"entities": [(4, 65, "ORG"), (92, 97, "MONEY")]}),
-    ("Core Cargo Shorts in Dress Beige Add Superdry", {"entities" : [(0, 32, "ORG")]})
+    ("Add Sony X-Series Portable Wireless Speaker SRSXE300H in Grey to wishlist$319.00$249.00", {"entities": [(4, 61, "PRODUCT"), (80, 87, "MONEY")]}),
+    ("Add Sony X-Series Portable Wireless Speaker SRSXE300B in Black to wishlist$319.00$249.00", {"entities": [(4, 62, "PRODUCT"), (81, 88, "MONEY")]}),
+    ("Add Sony X-Series Portable Wireless Speaker SRSXE200H in Grey to wishlist$249.00$189.00", {"entities": [(4, 60, "PRODUCT"), (80, 87, "MONEY"),]}),
+    ("Add Sony X-Series Portable Wireless Speaker SRSXE200L in Blue to wishlist$249.00$189.00", {"entities": [(4, 60, "PRODUCT"), (80, 87, "MONEY"),]}),
+    ("Add Sony Linkbuds S WFLS900NB in Black to wishlist$349.95$279.96", {"entities": [(4, 38, "PRODUCT"), (67, 72, "MONEY")]}),
+    ("Add Sony Sony Black On Ear Noise Cancelling Headphones MDRZX110NC to wishlist$99.95$79.95", {"entities": [(4, 65, "PRODUCT"), (92, 97, "MONEY")]}),
+    ("Core Cargo Shorts in Dress Beige Add Superdry", {"entities" : [(0, 32, "PRODUCT")]}),
+    ("Newport Chino Short in Brown Add Reserve", {"entities" : [(0, 28, "PRODUCT")]}),
 ]
 
 # Train the model
@@ -58,7 +57,7 @@ def scrape_prices(url):
 
         doc = nlp(all_text)
         for ent in doc.ents:
-            if ent.label_ == 'ORG' :
+            if ent.label_ == 'PRODUCT':
                 names.add(ent.text)
                 text = ent.text.replace(' ', '-')
                 # Find all <a> tags in the soup
@@ -69,12 +68,12 @@ def scrape_prices(url):
                     # Get the 'href' attribute of the current <a> tag
                     href = a_tag.get('href')
 
-                    # Check if 'href' is not None and if the partial ratio is above a certain threshold (e.g., 70)
                     if href and fuzz.partial_ratio(text, href) > 70:
                         # Add the joined URL to the 'links' set
                         links.add(urljoin("https://www.myer.com.au/", href))
 
         return prices, names, links
+        
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the URL: {e}")
         return set(), set(), set()
