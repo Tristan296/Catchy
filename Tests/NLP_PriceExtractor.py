@@ -13,17 +13,15 @@ from fuzzywuzzy import fuzz
 nlp = spacy.load("en_core_web_sm")
 
 # Annotated examples
-TRAIN_DATA = [
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE300H in Grey to wishlist$319.00$249.00", {"entities": [(4, 61, "PRODUCT"), (80, 87, "MONEY")]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE300B in Black to wishlist$319.00$249.00", {"entities": [(4, 62, "PRODUCT"), (81, 88, "MONEY")]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE200H in Grey to wishlist$249.00$189.00", {"entities": [(4, 60, "PRODUCT"), (80, 87, "MONEY"),]}),
-    ("Add Sony X-Series Portable Wireless Speaker SRSXE200L in Blue to wishlist$249.00$189.00", {"entities": [(4, 60, "PRODUCT"), (80, 87, "MONEY"),]}),
-    ("Add Sony Linkbuds S WFLS900NB in Black to wishlist$349.95$279.96", {"entities": [(4, 38, "PRODUCT"), (67, 72, "MONEY")]}),
-    ("Add Sony Sony Black On Ear Noise Cancelling Headphones MDRZX110NC to wishlist$99.95$79.95", {"entities": [(4, 65, "PRODUCT"), (92, 97, "MONEY")]}),
-    ("Core Cargo Shorts in Dress Beige Add Superdry", {"entities" : [(0, 32, "PRODUCT")]}),
-    ("Newport Chino Short in Brown Add Reserve", {"entities" : [(0, 28, "PRODUCT")]}),
-]
 
+TRAIN_DATA = [
+     ("Add Sony X-Series Portable Wireless Speaker SRSXE300H in Grey to wishlist$319.00$249.00", {"entities": [(4, 61, "PRODUCT"), (80, 87, "MONEY")]}),
+      ("Add Sony X-Series Portable Wireless Speaker SRSXE200L in Blue to wishlist$249.00$189.00", {"entities": [(4, 61, "PRODUCT"), (80, 87, "MONEY"),]}),
+     ("Add Sony Linkbuds S WFLS900NB in Black to wishlist$349.95$279.96", {"entities": [(4, 38, "PRODUCT"), (57, 64, "MONEY")]}),
+    # ("Add Sony Sony Black On Ear Noise Cancelling Headphones MDRZX110NC to wishlist$99.95$79.95", {"entities": [(4, 65, "PRODUCT"), (83, 89, "MONEY")]}),
+      # ("Core Cargo Shorts in Dress Beige Add Superdry", {"entities" : [(0, 32, "PRODUCT")]}),
+   #  ("Newport Chino Short in Brown Add Reserve", {"entities" : [(0, 28, "PRODUCT")]}),
+]
 # Train the model
 for epoch in range(10):
     for example in TRAIN_DATA:
@@ -31,12 +29,21 @@ for epoch in range(10):
         example = Example.from_dict(nlp.make_doc(text), gold_dict)
         nlp.update([example], drop=0.5)
 
-print(nlp.tokenizer.explain(text))
+# Save the trained model to disk
+model_output_path = "Tests/"
+nlp.to_disk(model_output_path)
+
+# Evaluate the model
+eval_data = [Example.from_dict(nlp.make_doc(text), {"entities": annotations["entities"]}) for text, annotations in TRAIN_DATA]
+scores = nlp.evaluate(eval_data)
+print("Precision: {:.2f}".format(scores["ents_p"] * 100))
+print("Recall: {:.2f}".format(scores["ents_r"] * 100))
+print("F1 Score: {:.2f}".format(scores["ents_f"] * 100))
 
 def scrape_prices(url):
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for bad responses
+        response.raise_for_status() 
         soup = BeautifulSoup(response.content, 'lxml')
         all_text = soup.get_text()
 
