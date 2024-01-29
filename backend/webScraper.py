@@ -1,6 +1,8 @@
 import os
 import sys
 import aiohttp
+from aiohttp import ClientSession
+import aiohttp_proxy
 from bs4 import BeautifulSoup, SoupStrainer
 from urllib.parse import urljoin, urlparse
 import tldextract
@@ -16,9 +18,15 @@ from .priceFinder import PriceScraper
 from .descriptionFinder import find_product_description
 
 class WebCrawler:
-    def __init__(self):
+    def __init__(self, proxy_list=None): 
         self.processed_sublinks = set()
+        self.proxy_list = proxy_list
+
     
+    async def get_session(self, proxy_url=None):
+        connector = aiohttp_proxy.ProxyConnector.from_url(proxy_url) if proxy_url else None
+        return ClientSession(connector=connector)
+
     @staticmethod        
     async def get_allowed_substring(website_name, product_name, setFlag):
         """
@@ -88,12 +96,7 @@ class WebCrawler:
             print(f"substring {getTag} not defined for {keyword}.")
             return setFlag
 
-    @staticmethod
-    async def process_url(url, setFlag, product_name, socketio,
-                          # Default Parameters
-                          processed_sublinks=set(), 
-                          printed_prices=set(), 
-                          product_data=[None, None, None, None]):
+    async def process_url(self, url, setFlag, product_name, socketio, processed_sublinks=set(), printed_prices=set(), product_data=[None, None, None, None]):
         
         """Processes a given URL, extracts allowed substrings 
 
@@ -107,16 +110,17 @@ class WebCrawler:
             print(f"Skipping already processed URL: {url}")
             return
 
-        async with aiohttp.ClientSession() as session:
-            response = await session.get(url)
-            html_content = await response.text()
-            soup = BeautifulSoup(html_content, 'lxml', parse_only=SoupStrainer('a'))
-            url_info = tldextract.extract(url)
+        session = await self.get_session()
+        response = await session.get(url)
+        html_content = await response.text()
+        soup = BeautifulSoup(html_content, 'lxml', parse_only=SoupStrainer('a'))
+        url_info = tldextract.extract(url)
 
-            product_data = await SublinkProcessor.process_sub_url(url, soup, session, processed_sublinks, 
-                                                   f"https://www.{url_info.domain}.com.au/", 
-                                                   product_name, setFlag, product_data, socketio)
-            
+        product_data = await SublinkProcessor.process_sub_url(url, soup, session, processed_sublinks, 
+                                            f"https://www.{url_info.domain}.com.au/", 
+                                            product_name, setFlag, product_data, socketio)
+
+        await session.close()
         return product_data
 
 class SublinkProcessor:
@@ -128,10 +132,10 @@ class SublinkProcessor:
             url (str): The main URL from which sublinks are derived.
             soup (BeautifulSoup): The BeautifulSoup object representing the HTML content of the main URL.
             session (aiohttp.ClientSession): The Aiohttp client session.
-            allowed_substring (str): The allowed substring used to filter sublinks.
             processed_sublinks (set): A set of URLs that have already been processed.
             base_url (str): base url of website with its domain derived from tldextract
-            setFlag: If price exists switch the flag on me. This will print items that have prices on frontend
+            setFlag: If the price exists, switch the flag on. This will print items that have prices on frontend
+            product_data: Existing product data
 
         Note:
             This function fetches sublinks, processes them, extracts prices and images, and prints product details.
