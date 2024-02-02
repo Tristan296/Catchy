@@ -6,7 +6,7 @@ import asyncio
 from fuzzywuzzy import fuzz
 from backend.webScraper import WebCrawler
 from flask_cors import CORS
-from flask_socketio import SocketIO, namespace
+from flask_socketio import SocketIO
 from gevent import monkey
 
 monkey.patch_all()
@@ -27,7 +27,7 @@ async def main(query):
     setFlag = False
     products_data = []
 
-    for url in search(' '.join(query), tld="co.in", num=10, stop=20, pause=0.1):
+    for url in search(' '.join(query), num=10, stop=20, pause=0.1):
         if fuzzy_match(query, url) > 70:
             crawler = WebCrawler(proxy_list=['https://198.176.56.39:80', 
                                             'http://62.210.114.201:8080', 
@@ -88,4 +88,4 @@ def mockup():
     return render_template('/mockup.html')
 
 if __name__ == '__main__':
-    socketio.run(app, port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)

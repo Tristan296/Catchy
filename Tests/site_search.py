@@ -9,21 +9,6 @@ from fuzzywuzzy import fuzz
 # Load spaCy model
 nlp = spacy.load("en_core_web_sm")
 
-TRAIN_DATA = [
-     ("Add Sony X-Series Portable Wireless Speaker SRSXE300H in Grey to wishlist$319.00$249.00", {"entities": [(4, 61, "PRODUCT"), (80, 87, "MONEY")]}),
-      ("Add Sony X-Series Portable Wireless Speaker SRSXE200L in Blue to wishlist$249.00$189.00", {"entities": [(4, 61, "PRODUCT"), (80, 87, "MONEY"),]}),
-     ("Add Sony Linkbuds S WFLS900NB in Black to wishlist$349.95$279.96", {"entities": [(4, 38, "PRODUCT"), (57, 64, "MONEY")]}),
-    # ("Add Sony Sony Black On Ear Noise Cancelling Headphones MDRZX110NC to wishlist$99.95$79.95", {"entities": [(4, 65, "PRODUCT"), (83, 89, "MONEY")]}),
-      # ("Core Cargo Shorts in Dress Beige Add Superdry", {"entities" : [(0, 32, "PRODUCT")]}),
-   #  ("Newport Chino Short in Brown Add Reserve", {"entities" : [(0, 28, "PRODUCT")]}),
-]
-# Train the model
-for epoch in range(10):
-    for example in TRAIN_DATA:
-        text, gold_dict = example
-        example = Example.from_dict(nlp.make_doc(text), gold_dict)
-        nlp.update([example], drop=0.5)
-
 def extract_product_name_from_href(url):
     # Parse the URL
     parsed_url = urlparse(url)
