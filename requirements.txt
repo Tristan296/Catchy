@@ -1,8 +1,205 @@
-Flask==1.1.2
-gevent==21.1.2
-Flask-SocketIO==5.0.1
-google==3.0.0
-googlesearch-python==1.0.1
-fuzzywuzzy==0.18.0
-gunicorn==20.1.0
+absl-py==2.0.0
+aiohttp==3.8.5
+aiohttp-proxy==0.1.2
+aiohttp-socks==0.8.4
+aioresponses==0.7.6
+aiosignal==1.3.1
+annotated-types==0.6.0
+asgiref==3.7.2
+astunparse==1.6.3
+async-timeout==4.0.3
+attrs==23.1.0
+autoscraper==1.1.14
+beautifulsoup4==4.12.2
+bidict==0.22.1
+blessed==1.20.0
+blinker==1.7.0
+blis==0.7.11
+boltons @ file:///home/conda/feedstock_root/build_artifacts/boltons_1677499911949/work
+Brotli @ file:///Users/runner/miniforge3/conda-bld/brotli-split_1687884292427/work
+bs4==0.0.1
+cachetools==5.3.2
+catalogue==2.0.10
+certifi==2023.7.22
+cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1671179432479/work
+charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1688813409104/work
+clarifai==9.11.1
+clarifai-grpc==9.11.5
+click==8.1.7
+cloudpathlib==0.16.0
+colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1666700638685/work
+conda @ file:///Users/runner/miniforge3/conda-bld/conda_1692727408768/work
+conda-package-handling @ file:///home/conda/feedstock_root/build_artifacts/conda-package-handling_1691048088238/work
+conda_package_streaming @ file:///home/conda/feedstock_root/build_artifacts/conda-package-streaming_1691009212940/work
+confection==0.1.4
+contextlib2==21.6.0
+cryptography @ file:///Users/runner/miniforge3/conda-bld/cryptography-split_1691444276937/work
+cymem==2.0.8
+Django==4.2.4
+django-cors-headers==4.3.1
+djangorestframework==3.14.0
+dnspython==2.5.0
+editor==1.6.6
+en-core-web-md @ https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.7.1/en_core_web_md-3.7.1-py3-none-any.whl#sha256=6a0f857a2b4d219c6fa17d455f82430b365bf53171a2d919b9376e5dc9be032e
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl#sha256=86cc141f63942d4b2c5fcee06630fd6f904788d2f0ab005cce45aadb8fb73889
+et-xmlfile==1.1.0
 eventlet==0.35.1
+exceptiongroup==1.2.0
+fake-useragent==1.4.0
+filelock==3.13.1
+Flask==3.0.0
+Flask-Cors==4.0.0
+Flask-SocketIO==5.3.6
+flatbuffers==23.5.26
+frozenlist==1.4.0
+fsspec==2023.12.2
+fuzzywuzzy==0.18.0
+gast==0.5.4
+gevent==23.9.1
+gevent-websocket==0.10.1
+google==3.0.0
+google-auth==2.26.2
+google-auth-oauthlib==1.2.0
+google-pasta==0.2.0
+googleapis-common-protos==1.62.0
+googlesearch-python==1.2.3
+greenlet==3.0.3
+grpcio==1.60.0
+gTTS==2.5.0
+gunicorn==21.2.0
+h11==0.14.0
+h5py==3.10.0
+httpcore==1.0.2
+httpx==0.26.0
+huggingface-hub==0.20.3
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1663625384323/work
+importlib-metadata==7.0.1
+importlib-resources==6.1.1
+iniconfig==2.0.0
+inquirer==3.2.2
+ipython==8.18.1
+itsdangerous==2.1.2
+Jinja2==3.1.3
+joblib==1.3.2
+jsonpatch @ file:///home/conda/feedstock_root/build_artifacts/jsonpatch_1632759296524/work
+jsonpointer==2.0
+keras==2.15.0
+langcodes==3.3.0
+libclang==16.0.6
+lxml==4.9.3
+Markdown==3.5.2
+markdown-it-py==3.0.0
+MarkupSafe==2.1.4
+mdurl==0.1.2
+ml-dtypes==0.2.0
+monkey==0.1
+mpmath==1.3.0
+multidict==6.0.4
+murmurhash==1.0.10
+networkx==3.2.1
+nltk==3.8.1
+numpy==1.26.2
+oauthlib==3.2.2
+opencv-python==4.9.0.80
+openpyxl==3.1.2
+opt-einsum==3.3.0
+outcome==1.3.0.post0
+packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1681337016113/work
+pandas==2.1.3
+pillow==10.2.0
+pluggy @ file:///home/conda/feedstock_root/build_artifacts/pluggy_1687776318736/work
+pocketsphinx==5.0.3
+preshed==3.0.9
+protobuf==4.23.4
+pyasn1==0.5.1
+pyasn1-modules==0.3.0
+PyAudio==0.2.14
+pycosat @ file:///Users/runner/miniforge3/conda-bld/pycosat_1666836597919/work
+pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1636257122734/work
+pydantic==2.5.3
+pydantic_core==2.14.6
+pyOpenSSL @ file:///home/conda/feedstock_root/build_artifacts/pyopenssl_1685514481738/work
+PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1661604839144/work
+pytesseract==0.3.10
+pytest==7.4.4
+python-dateutil==2.8.2
+python-dotenv==1.0.0
+python-engineio==4.8.2
+python-googlesearch==1.1.1
+python-Levenshtein==0.12.2
+python-rapidjson==1.14
+python-socketio==5.11.0
+python-socks==2.4.4
+pytz==2023.3.post1
+pyuseragents==1.0.5
+pyxll==5.7.1
+readchar==4.0.5
+regex==2023.10.3
+requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1684774241324/work
+requests-file==1.5.1
+requests-oauthlib==1.3.1
+rich==13.7.0
+rsa==4.9
+ruamel.yaml @ file:///Users/runner/miniforge3/conda-bld/ruamel.yaml_1686993970244/work
+ruamel.yaml.clib @ file:///Users/runner/miniforge3/conda-bld/ruamel.yaml.clib_1670412837369/work
+runs==1.2.2
+safetensors==0.4.2
+schema==0.7.5
+SciPy==1.12.0rc1
+selectolax==0.3.17
+selenium==4.16.0
+simple-websocket==1.0.0
+six==1.16.0
+smart-open==6.4.0
+sniffio==1.3.0
+sortedcontainers==2.4.0
+sounddevice==0.4.6
+soupsieve==2.4.1
+spacy==3.7.2
+spacy-legacy==3.0.12
+spacy-loggers==1.0.5
+SpeechRecognition==3.10.1
+speedtest==0.0.1
+speedtest-cli==2.1.3
+sqlparse==0.4.4
+srsly==2.4.8
+stack-data==0.6.3
+sympy==1.12
+tensorboard==2.15.1
+tensorboard-data-server==0.7.2
+tensorflow==2.15.0
+tensorflow-estimator==2.15.0
+tensorflow-io-gcs-filesystem==0.34.0
+tensorflow-macos==2.15.0
+termcolor==2.4.0
+thinc==8.2.2
+timeout-decorator==0.5.0
+tldextract==5.1.1
+tokenizers==0.15.1
+toolz @ file:///home/conda/feedstock_root/build_artifacts/toolz_1657485559105/work
+torch==2.1.2
+tornado==6.4
+tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1691671248568/work
+transformers==4.37.1
+trio==0.24.0
+trio-websocket==0.11.1
+tritonclient==2.41.0
+typer==0.9.0
+typing_extensions==4.9.0
+tzdata==2023.3
+Universal-MacAssistant==1.0
+urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1689789803562/work
+wasabi==1.1.2
+wcwidth==0.2.13
+weasel==0.3.4
+webdriver-manager==4.0.1
+Werkzeug==3.0.1
+wrapt==1.14.1
+wsproto==1.2.0
+XlsxWriter==3.1.9
+xmod==1.8.1
+yarl==1.9.2
+zipp==3.17.0
+zope.event==5.0
+zope.interface==6.1
+zstandard==0.19.0
