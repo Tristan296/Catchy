@@ -18,9 +18,8 @@ from .priceFinder import PriceScraper
 from .descriptionFinder import find_product_description
 
 class WebCrawler:
-    def __init__(self, proxy_list=None): 
+    def __init__(self): 
         self.processed_sublinks = set()
-        self.proxy_list = proxy_list
 
     
     async def get_session(self, proxy_url=None):
